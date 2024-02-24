@@ -1,32 +1,57 @@
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 import React from 'react';
 import {FaSearch} from 'react-icons/fa';
 
 
 function Search (){
-  const [filteredData, setFilteredData]=useState(' ')
-  const [data,setData]=useState([])
+  const [searchText, setSearchText]=useState(' ')
+  const [definition, setDefinition] = useState('');
 
+  const handleSearch = async ()=>{
+    try{
+      const res =await fetch (`https://api.dictionaryapi.dev/api/v2/entries/en/${searchText}`);
+      const data = await res.json();
 
- useEffect(()=>{
-  if(!filteredData){
-    setData([]);
-    return;
-  }
+      if(data.length>0){
+        setDefinition(data[0].meanings[0].definitions[0].definition);
+      }else{
+        setDefinition("Sorry , We couldn't find a word")
+      }
+    }catch(error){
+      console.error('Error',error);
+      setDefinition("An error occurred.")
+    }
+  };
+    
+  return(
+    <div className='bg-slate-100 h-screen'>
+      <h1 className='bg-amber-500 text-3xl text-center p-3 px-1'>Dictionary</h1>
+      <div className='text-center pt-3.5 '>
+        <input placeholder='Type to search...' className='pb-1 w-52 h-8 bg-stone-50 focus:outline-none inline-block'
+        type='text'
+        value={searchText}
+        onChange={(e)=>setSearchText(e.target.value)}/>
+        <FaSearch className='bg-stone-50 h-8 inline-block p-px'/>
+        <button className='text-center inline-block' onClick={handleSearch}>Search</button>
+      </div>
+     
+      <h2 className='text-center pt-3.5 invisible '>Search Results</h2>
+      <p className='text-center'>{definition}</p>
+    </div>
+  )
+    }
+ /*
 
-     fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${filteredData}`)
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${searchData}`)
       .then(res=>res.json())
       .then(result=>{
         setData(result);
         // console.log(result)
       })
-      .catch(error=>console.log(error));
-    },[filteredData])
 
-      
- 
+
 const handleChange=(event)=>{
- setFilteredData(event.target.value);
+ setSearchData(event.target.value);
   };
 
   return (
@@ -36,7 +61,7 @@ const handleChange=(event)=>{
               <input placeholder='Type to search...'  
               className='w-52 h-8 bg-stone-50 focus:outline-none '
               type='search'
-              value={filteredData}
+              value={searchData}
               onChange={handleChange}
               /> 
               <FaSearch className='bg-stone-50 h-8'/>
@@ -67,4 +92,5 @@ const handleChange=(event)=>{
    
   );
            }
+       */    
 export default Search
